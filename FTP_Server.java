@@ -12,7 +12,7 @@ public class FTP_Server {
 	public static void main(String[] args)
 	{
 		try {
-		    serverSocket = new ServerSocket(4000);
+		    serverSocket = new ServerSocket(1000);
 		    System.out.println("FTP Server started.");
 		} catch (Exception e) {
 		    System.err.println("Cannot start FTP server on this port");

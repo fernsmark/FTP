@@ -20,7 +20,7 @@ public class FTP_client {
 
 	public static void main(String[] args) throws IOException {
 		try {
-			sock = new Socket("localhost", 4000);
+			sock = new Socket("localhost", 1000);
 			stdin = new BufferedReader(new InputStreamReader(System.in));
 		} catch (Exception e) {
 			System.err.println("Cannot connect to the server, try again later.");
@@ -32,15 +32,16 @@ public class FTP_client {
 		try {
 			switch (Integer.parseInt(selectAction())) {
 			case 1:
+				os.println("1");
 				sendFile();
 				break;
-				/*case 2:
-	            os.println("2");
-	            System.err.print("Enter file name: ");
-	            fileName = stdin.readLine();
-	            os.println(fileName);
-	            receiveFile(fileName);
-	            break;*/
+			/*case 2:
+				os.println("2");
+				System.err.print("Enter file name: ");
+				fileName = stdin.readLine();
+				os.println(fileName);
+				receiveFile(fileName);
+				break;*/
 			}
 		} catch (Exception e) {
 			System.err.println("not valid input");
@@ -51,7 +52,7 @@ public class FTP_client {
 	}
 
 	public static String selectAction() throws IOException {
-		System.out.println("1. STOR");
+		System.out.println("1. STOR ");
 		System.out.println("2. Recieve file.");
 		System.out.print("\nMake selection: ");
 
