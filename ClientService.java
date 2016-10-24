@@ -67,7 +67,7 @@ public class ClientService implements Runnable {
 	        output.close();
 	        clientData.close();
 
-	        System.out.println("File "+fileName+" received from client.");
+	        System.out.println("File "+fileName+" received from client" + " from " + clientSocket);
 	    } catch (IOException ex) {
 	        System.err.println("Client error. Connection closed.");
 	    }

@@ -13,21 +13,28 @@ import java.net.Socket;
 
 public class FTP_client {
 
-	private static Socket sock;
+	private static Socket sock_command, sock_data;
 	private static String fileName;
 	private static BufferedReader stdin;
 	private static PrintStream os;
 
 	public static void main(String[] args) throws IOException {
 		try {
-			sock = new Socket("localhost", 1000);
+			sock_command = new Socket("localhost", 21); 
+			if(sock_command.isConnected())
+			{
+				sock_data = new Socket("localhost", 20); 
+				System.out.println("Connection established on " + sock_command.getPort() + " \nData communication on " + sock_data.getPort());
+			}
+			else
+				System.err.println("Command Port not set up. Try again.");
 			stdin = new BufferedReader(new InputStreamReader(System.in));
 		} catch (Exception e) {
 			System.err.println("Cannot connect to the server, try again later.");
 			System.exit(1);
 		}
 
-		os = new PrintStream(sock.getOutputStream());
+		os = new PrintStream(sock_data.getOutputStream());
 
 		try {
 			switch (Integer.parseInt(selectAction())) {
@@ -48,7 +55,7 @@ public class FTP_client {
 		}
 
 
-		sock.close();
+		sock_data.close();
 	}
 
 	public static String selectAction() throws IOException {
@@ -74,7 +81,7 @@ public class FTP_client {
 			DataInputStream dis = new DataInputStream(bis);
 			dis.readFully(mybytearray, 0, mybytearray.length);
 
-			OutputStream os = sock.getOutputStream();
+			OutputStream os = sock_data.getOutputStream();
 
 			//Sending file name and file size to the server
 			DataOutputStream dos = new DataOutputStream(os);
