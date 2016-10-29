@@ -1,39 +1,58 @@
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Scanner;
 
 
 public class FTP_client {
 
 	private static Socket sock_command, sock_data;
 	private static String fileName;
-	private static BufferedReader stdin;
 	private static PrintStream os;
+	static Scanner in = new Scanner(System.in);
+	public static BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
 	public static void main(String[] args) throws IOException {
+		
 		try {
+			
 			sock_command = new Socket("localhost", 21); 
-			if(sock_command.isConnected())
-			{
-				sock_data = new Socket("localhost", 20); 
-				System.out.println("Connection established on " + sock_command.getPort() + " \nData communication on " + sock_data.getPort());
-			}
-			else
-				System.err.println("Command Port not set up. Try again.");
-			stdin = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Enter Username");
+			String user = stdin.readLine();
+			//Send the message to the server
+            DataOutputStream outToServer = new DataOutputStream(sock_command.getOutputStream());
+            outToServer.writeBytes(user);
+            outToServer.close();
+            
+            
+            
+            	if(!sock_command.isOutputShutdown())
+    			{
+    				sock_data = new Socket("localhost", 20); 
+    				System.out.println("Connection established on " + sock_command.getPort() + " \nData communication on " + sock_data.getPort());
+    			}
+    			else
+    			{
+    				System.err.println("User Authentication Failed. Try again.");
+    				sock_command.close();
+    			}
+    				
+            
 		} catch (Exception e) {
 			System.err.println("Cannot connect to the server, try again later.");
 			System.exit(1);
-		}
-
+		}	
 		os = new PrintStream(sock_data.getOutputStream());
 
 		try {
@@ -62,7 +81,7 @@ public class FTP_client {
 		System.out.println("1. STOR ");
 		System.out.println("2. Recieve file.");
 		System.out.print("\nMake selection: ");
-
+		
 		return stdin.readLine();
 	}
 
