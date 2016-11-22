@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -42,8 +43,52 @@ public class FTP_Server {
 		        	String returnMessage = null;
 			        //Authentication
 		        	String user = inFromClient.readLine();
+		        	String[] userInputs = user.split(" ");
+		        	String userCommand = userInputs[0].trim();
                     String username = "";
                     String password = "";
+                    switch (userCommand) {
+						case "USER":
+							validateUser(userInputs[1].trim());
+							break;
+						
+						case "PWD":
+							validatePassword(userInputs[1].trim());
+							break;
+							
+						case "STOR"
+							port("hostname", "port");
+							store("filename");
+							break;
+							
+						case "RETR":
+							port("hostname", "port");
+							retr("filename");
+							break;
+						
+						case "NOOP":
+							noop();
+							break;
+						
+						case "QUIT":
+							quit();
+							break;
+							
+						case "TYPE":
+							type();
+							break;
+							
+						case "MODE":
+							mode();
+							break;
+							
+						case "STRU":
+							stru();
+							break;
+
+					default:
+						break;
+					}
                     if(user.contains("USER")) {
                         String[] users = user.split(" ");
                         username = users[1];
@@ -107,17 +152,45 @@ public class FTP_Server {
         return found;
     }
     
-    public synchronized boolean retr(String fileName) throws IOException {
-
-        String response = null;
+    public String[] getPort(String portCommand){
+    	String[] parts = portCommand.split(" ");
+    	String ip=parts[1];
+    	String ip_parts = ip.split(",");
+    	int clientPort= Integer.parseInt(ip_parts[4]*256) + Integer.parseInt(ip_parts[5]);
+    	String client_ip = String.join(ip_parts[0], ".", ip_parts[1], ".", ip_parts[2], ".", ip_parts[3]);
+    	String vals[] = new String()[2];
+    	vals[0] = client_ip;
+    	vals[1] = String.valueOf(clientPort);
+    	
+    	return vals; 
+    }
+    
+    public synchronized String port(Socket dataSocket, String port) throws IOException {
+    	int port = getPort(port);
+    	
+    	try {
+	    	ServerSocket data_socket = new ServerSocket(port);
+	    	data_socket.accept();
+	    	return "200 PORT command successful"
+    	}
+    	catch(Exception e){
+    		System.out.println(e.printStackTrace();
+    	}
+    }
+    
+    public synchronized boolean retr(String fileName, Socket dataSocket) throws IOException {
+//    	Socket dataSocket = new Socket(0);
+//    	String socketAddress = getSoc
+        
+    	String response = null;
 
         String fullPath = "F:\FTP\testFile.txt"//pwd() + "/" + fileName;
         
         sendLine("RETR " + fullPath);
         response = readLine();   
 
-        BufferedInputStream input = new BufferedInputStream(dataSocket.getInputStream());
-        BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(new File(fileName)));
+        BufferedInputStream input = new BufferedInputStream(new FileInputStream(new File(fileName)));//dataSocket.getInputStream());
+        BufferedOutputStream output = new BufferedOutputStream(dataSocket.getOutputStream());//new FileOutputStream(new File(fileName)));
 
         byte[] buffer = new byte[4096];
         int bytesRead = 0;
@@ -129,6 +202,16 @@ public class FTP_Server {
         input.close();
     }
     
-    public synchronized boolean noop() throws IOException {
+    public synchronized boolean noop(Socket serverSocket) throws IOException {
+    	if(serverSocket.isConnected()){
+    		return "200 Zzz...";
+    	}
+    	else {
+    		return "Not Connected!";
+    	}
+    }
+    
+    public synchronized boolean quit(Socket serverSocket) throws IOException {
+    	serverSocket.close();
     }
 }
