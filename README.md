@@ -9,3 +9,4 @@ MODE - Stream
 STRUCTURE - File  
 COMMANDS - USER, QUIT, PORT, TYPE, MODE, RETR, STOR, NOOP.  
 
+Last updated: 12/2016
